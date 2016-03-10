@@ -1,0 +1,9 @@
+Please improve your module as:
+- Add more the batch finish on your module
+- Must be use function user_save() replace the db_insert()
+- At function read_csv: Do you replace the SESSION by another way ?
+- array('insert_content_user', array(10)), >> Always only 1 operation insert_content_user. Can you optimize it by split more in here ?
+- 'file' => drupal_get_path('module', 'batch_example'), -> the line code is unmeaning
+- Please comment the meaningful function. It's mean apply the rule Drupal Convention. Here is the guide: https://www.drupal.org/coding-standards
+- Why has this file batch_insert_users.admin.inc ? This file is not support this module. This is the file of Orange project :D
+- Line code files[] = batch_insert_users.admin.inc is unmeaning too.
