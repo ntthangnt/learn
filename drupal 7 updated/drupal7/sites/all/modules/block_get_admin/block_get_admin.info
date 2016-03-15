@@ -1,0 +1,14 @@
+name = Block get information of admin
+description = Core Panels display functions; provides no external UI, at least one other Panels module should be enabled.
+core = 7.x
+package = "Block_get_admin"
+version = Block_get_admin_VERSION
+configure = admin/structure/admin
+files[] = block_get_admin.module
+
+; Information added by Drupal.org packaging script on 2015-01-28
+version = "7.x-3.5"
+core = "7.x"
+project = "block_get_admin"
+datestamp = "1422472985"
+

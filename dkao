@@ -1,0 +1,83 @@
+[33mcommit c6dc7a5bbd3963a46be213e15692b301a9ad1151[m
+Author: Nguyen Thai Thang <thang.n@php-thangn.sutrixmedia1.com>
+Date:   Tue Mar 15 16:45:03 2016 +0700
+
+    Training drupal 7
+
+[33mcommit d5ff3d87dec5dd338b4af19c0235469e0e4f52f4[m
+Author: Nguyen Thai Thang <thang.n@php-thangn.sutrixmedia1.com>
+Date:   Mon Mar 14 17:46:01 2016 +0700
+
+    Host information
+
+[33mcommit b8d4c156858bb6bfa3d874bf38af6edad22c97eb[m
+Author: Nguyen Thai Thang <thang.n@php-thangn.sutrixmedia1.com>
+Date:   Fri Mar 11 18:00:18 2016 +0700
+
+    update
+
+[33mcommit ebdcec3ba55312578f6b983faa4608b617dfeaaf[m
+Author: Nguyen Thai Thang <thang.n@php-thangn.sutrixmedia1.com>
+Date:   Thu Mar 10 17:22:38 2016 +0700
+
+    batch insert users update
+
+[33mcommit be1c8f133f7fa48a136da5e5023c9be0d7e3ebf3[m
+Author: Nguyen Thai Thang <thang.n@php-thangn.sutrixmedia1.com>
+Date:   Thu Mar 10 16:55:49 2016 +0700
+
+    improve batch
+
+[33mcommit 9913f87f317f1100732ab25b89b31e58873d983a[m
+Author: Nguyen Thai Thang <thang.n@php-thangn.sutrixmedia1.com>
+Date:   Thu Mar 10 14:06:06 2016 +0700
+
+    New code - insert users use batch
+
+[33mcommit 987eeb5d5714237e4ed81498ec6b48c198c033c1[m
+Author: Nguyen Thai Thang <thang.n@php-thangn.sutrixmedia1.com>
+Date:   Wed Mar 9 18:13:43 2016 +0700
+
+    batch
+
+[33mcommit 051b3a149f56f415733276f5de0b20c9886f8b8d[m
+Author: thaithang <ntthangnt@gmail.com>
+Date:   Mon Mar 7 01:39:37 2016 +0700
+
+    again
+
+[33mcommit 1262c9e01e0db0ba5f948830249ac8522d44cca2[m
+Author: thaithang <ntthangnt@gmail.com>
+Date:   Mon Mar 7 01:07:45 2016 +0700
+
+    all files
+
+[33mcommit dc59ed4ad67ddff861cccb712e6e1f4ac54e91dd[m
+Author: thaithang <ntthangnt@gmail.com>
+Date:   Mon Mar 7 01:01:56 2016 +0700
+
+    test3
+
+[33mcommit f405bff4c15e62fa688178f28e61d754e4b88f0a[m
+Author: thaithang <ntthangnt@gmail.com>
+Date:   Mon Mar 7 00:54:26 2016 +0700
+
+    zzz
+
+[33mcommit 684a4315321be6d4e009fcd1910b33291daaa23a[m
+Author: thaithang <ntthangnt@gmail.com>
+Date:   Mon Mar 7 00:19:55 2016 +0700
+
+    hoho
+
+[33mcommit d7b10713b988de85a6eab6275424297277509b1f[m
+Author: thaithang <ntthangnt@gmail.com>
+Date:   Mon Mar 7 00:12:15 2016 +0700
+
+    second comment
+
+[33mcommit 995546280dc08ab216f96e91e0bfb5c7e7211f76[m
+Author: thangredweb <thang@redweb.dk>
+Date:   Sun Mar 6 23:59:08 2016 +0700
+
+    Initial commit

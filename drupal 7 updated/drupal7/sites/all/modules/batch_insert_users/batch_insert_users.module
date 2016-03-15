@@ -1,0 +1,175 @@
+<?php
+
+/**
+ * Implement hook_menu()
+ */
+function batch_insert_users_menu() {
+    $items = array();
+    $items['demo/insert_users'] = array(
+    'title' => 'Batch demo insert users',
+    'description' => 'Example of Drupal batch processing',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('batch_insert_users_simple_form'),
+    'access callback' => TRUE,
+  );
+
+  return $items;    
+}
+
+/**
+ * Build a form to choose file
+ */
+function batch_insert_users_simple_form($form, &$form_state) {
+  $form['import'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Insert users to database'),
+    '#weight' => 5,
+    '#collapsible' => true,
+    '#collapsed' => false,
+  );
+  $form['import']['csv_file'] = array(
+    '#title' => t('Choose a file'),
+    '#type' => 'managed_file',
+    '#description' => t('Allowed file types: @ext .', array('@ext' => 'csv')),
+    '#upload_location' => 'public://imexcel/',
+    '#upload_validators' => array(
+    'file_validate_extensions' => array('csv'),
+    ),
+  );
+  $form['import']['submit'] = array('#type' => 'submit', '#value' => t('Import'));
+  return $form;
+}
+
+/**
+ * Submit hander form
+ * 
+ * @param array $form       Form API form
+ * @param array $form_state Form API form
+ */ 
+function batch_insert_users_simple_form_submit($form, &$form_state) {
+    $file = file_load($form_state['values']['csv_file']);
+ 
+    $number_operations = 2000;
+    $operations = array();
+  if ($file != false) {
+      // setup a operations with 2000 elements
+      for($i = 0; $i < $number_operations; $i++) {
+          $operations[] = array(
+              array('read_csv', array($file->uri)),
+              array('insert_content_user', array(10)),
+          );
+        }
+      }
+      $batch = array(
+      'title' => t('Inserting'),
+      'operations' => $operations,   
+      'title' => t('Processing insert user'),
+      'init_message' => t('Insert is starting.'),
+      'progress_message' => t('Processed @current out of @total.'),
+      'error_message' => t('Insert has encountered an error.'),
+      'finished' => 'batch_insert_users_finished', 
+    
+    );
+      batch_set($batch);
+  }
+
+/**
+ * Read csv file
+ */
+function read_csv($file, &$context) {
+  $handle = fopen($file, "r");
+  $_SESSION['import_items'] = array();
+  while (($fileop = fgetcsv($handle, 1000, "\n")) !== false) {
+    if (!is_null($fileop[0])) {
+      $_SESSION['import_items'][] = $fileop[0];
+    }
+  }
+  
+  return $_SESSION['import_items'];
+}
+
+/**
+ * This function called operation in batch_insert_users_simple_form_submit function
+ */
+function insert_content_user($limit, &$context) { 
+    
+  if (empty($context['sandbox'])) {
+    $context['sandbox']['progress'] = 0;
+    $context['sandbox']['current_index'] = 1;
+    $context['sandbox']['max'] = count($_SESSION['import_items']);
+  }
+    $stop = $context['sandbox']['current_index'] + $limit;
+  if ($stop > $context['sandbox']['max'])
+    $stop = $context['sandbox']['max'];
+    
+  for ($i = $context['sandbox']['current_index']; $i < $stop; $i++) {
+    $data = explode(',', $_SESSION['import_items'][$i]);
+ 
+    // Insert users to database
+    $user_info = array(
+        'uid' => $data[0],
+        'name' => $data[1],
+        'pass' => $data[2],
+        'mail' => $data[3],
+        'theme' => $data[4],
+        'signature' => $data[5],
+        'signature_format' => $data[6],
+        'created' => $data[7],
+        'access' => $data[8],
+        'login  ' => $data[9],
+        'status' => $data[10],
+        'timezone' => $data[11],
+        'language' => $data[12],
+        'picture' => $data[13],
+        'init' => $data[14],
+        'data' => $data[15],             
+    
+    );
+    if(!empty($user_info)) {
+     
+        user_save(null, $user_info);
+    }
+    
+    $context['results'][] = $_SESSION['import_items'][$i];
+    $context['sandbox']['progress']++;
+    $context['sandbox']['current_index']++;
+    $context['message'] = $data[0] . ' : ' . $data[1];
+  }
+  
+  if ($context['sandbox']['progress'] != $context['sandbox']['max']) {
+    $context['finished'] = $context['sandbox']['progress'] / $context['sandbox']['max'];
+  }
+}
+
+/**
+ * Callback batch and print result of operation.
+ */
+function batch_insert_users_finished($success, $results, $operations) {
+  if ($success) {
+    // Here we could do something meaningful with the results.
+    // We just display the number of nodes we processed...
+    drupal_set_message(t('@count results processed in @requests HTTP requests.', array('@count' => count($results), '@requests' => _batch_insert_users_get_http_requests())));
+    drupal_set_message(t('The final result was "%final"', array('%final' => end($results))));
+  }
+  else {
+    // An error occurred.
+    // $operations contains the operations that remained unprocessed.
+    $error_operation = reset($operations);
+    drupal_set_message(
+      t('An error occurred while processing @operation with arguments : @args',
+        array(
+          '@operation' => $error_operation[0],
+          '@args' => print_r($error_operation[0], TRUE),
+        )
+      ),
+      'error'
+    );
+  }
+}
+
+/**
+ * Count http request in session variable
+ */
+function _batch_insert_users_get_http_requests() {
+  return !empty($_SESSION['http_request_count']) ? $_SESSION['http_request_count'] : 0;
+}
