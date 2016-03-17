@@ -54,11 +54,33 @@ function block_get_admin_menu() {
 }
 
 /**
- * Implement hook js
+ * implement hook_menu_alter
  */
-//function block_get_admin_js_alter(&$javascript){
-//    $javascript['js/get_admin.js']['data'] = drupal_get_path('module', 'Js test');
-//}
+function block_get_admin_menu_alter(&$items){
+//    $items['examples/get_admin']['page callback'] = '';
+}
+
+/**
+ * implement hook_menu_breadcrumb_alter
+ */
+function block_get_admin_menu_breadcrumb_alter(&$active_trail, $item){
+//    $path = $item['path'];
+//    $active_trail[0]['title'] = $active_trail[0]['title'].'/'.$path;
+    if(!drupal_is_front_page()){
+        $end = end($active_trail);
+        if($item['href'] == $end['href']){
+            $active_trail[] = $end;
+        }
+    }
+        
+}
+
+/**
+ * Implement hook_menu_link_alter
+ */
+function block_get_admin_search_preprocess($text){
+    return $text;
+}
 
 /**
  * Returns the render array for the form.
@@ -189,4 +211,19 @@ function block_get_admin_content($name_block){
     
     return $result;
 }
+
+/**
+ * change page user sent to drupal_goto
+ */
+//function block_get_admin_drupal_goto_alter(&$path, &$options, &$http_response_code){
+//    $http_response_code = 500;
+//    dpm($http_response_code);
+//}
+
+/**
+ * Implement hook_mail
+ */
+//function block_get_admin_mail($key, &$message, $params){
+//    dpm($message);
+//}
 

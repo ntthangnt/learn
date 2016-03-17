@@ -26,20 +26,25 @@ function bartik_preprocess_html(&$variables) {
   drupal_add_css(path_to_theme() . '/css/ie6.css', array('group' => CSS_THEME, 'browsers' => array('IE' => 'IE 6', '!IE' => FALSE), 'preprocess' => FALSE));
 }
 
-function bartik_form_alter(&$form, &$form_state, $form_id) {
-    $form['year_of_birth'] = array(
-      '#title' => 'Month of birth',
-      '#type' => 'textfield',
-      '#description' => 'Format is YYYY',  
-    );
-    $form['name']['first'] = array(
-        '#type' => 'checkbox',
-        '#title' => 'first',
-        '#required' => TRUE,
-    );
-    
-    dpm($form_state);
-}
+//function bartik_form_alter(&$form, &$form_state, $form_id) {
+//    $form['year_of_birth'] = array(
+//      '#title' => 'Year of birth',
+//      '#type' => 'textfield',
+//      '#description' => 'Format is YYYY',  
+//    );
+//    $form['name']['first'] = array(
+//        '#type' => 'textfield',
+//        '#title' => 'First name',
+//        '#required' => TRUE,
+//    );
+//    
+//    $form['name']['mail'] = array(
+//      '#type' => 'textfield',
+//      '#title' => 'Email',
+//      '#required' => TRUE,  
+//    );    
+//    
+//}
 
 /**
  * Override or insert variables into the page template for HTML output.
@@ -50,6 +55,13 @@ function bartik_process_html(&$variables) {
     _color_html_alter($variables);
   }
 
+}
+
+/**
+ * Implement hook_theme_registry_alter
+ */
+function bartik_theme_registry_alter(&$theme_registry){
+//    dpm($theme_registry);
 }
 
 /**
@@ -169,4 +181,16 @@ function bartik_field__taxonomy_term_reference($variables) {
   $output = '<div class="' . $variables['classes'] . (!in_array('clearfix', $variables['classes_array']) ? ' clearfix' : '') . '"' . $variables['attributes'] .'>' . $output . '</div>';
 
   return $output;
+}
+
+function bartik_html_head_alter(&$head_elements) {
+//    foreach ($head_elements as $key => $element){
+//        $head_elements[$key]['#attributes'] = '';
+//    }
+}
+
+
+function bartik_js_alter(&$javascript) {
+//    $jquery_cdn = 'http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js';
+//    $javascript['misc/drupal.js']['data']= $jquery_cdn;
 }
