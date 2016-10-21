@@ -1,0 +1,14 @@
+name = Batch insert about 2000 users
+description = Core Panels display functions; provides no external UI, at least one other Panels module should be enabled.
+core = 7.x
+package = "Batch_insert_users"
+version = Batch_insert_user_VERSION
+configure = admin/structure/batch
+files[] = batch_insert_users.module
+
+; Information added by Drupal.org packaging script on 2015-01-28
+version = "7.x-3.5"
+core = "7.x"
+project = "batch_insert_users"
+datestamp = "1422472985"
+

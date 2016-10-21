@@ -1,0 +1,113 @@
+<?php
+
+// hook_menu
+function batch_insert_users_menu() {
+    $items = array();
+    $items['demo/insert_users'] = array(
+    'title' => 'Batch demo insert users',
+    'description' => 'Example of Drupal batch processing',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('batch_insert_users_simple_form'),
+    'access callback' => TRUE,
+  );
+
+  return $items;    
+}
+
+function batch_insert_users_simple_form($form, &$form_state) {
+  $form['import'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Insert users to database'),
+    '#weight' => 5,
+    '#collapsible' => true,
+    '#collapsed' => false,
+  );
+  $form['import']['csv_file'] = array(
+    '#title' => t('Choose a file'),
+    '#type' => 'file',
+    '#description' => t('Allowed file types: @ext .', array('@ext' => 'csv')),
+    '#upload_location' => 'public://imexcel/',
+    '#upload_validators' => array(
+    'file_validate_extensions' => array('csv'),
+    ),
+  );
+  $form['import']['submit'] = array('#type' => 'submit', '#value' => t('Import'));
+  return $form;
+}
+
+function batch_insert_users_simple_form_submit($form, &$form_state) {
+    $file = file_load($form_state['values']['csv_file']);
+    
+  if ($file != false) {
+      
+    $batch = array(
+      'title' => t('Importing'),
+      'operations' => array(
+        array('read_csv', array($file->uri)), 
+        array('insert_content_user', array(10)),
+        array('detroy_file', array($file)),
+      ),
+//      'finished' => 'import_user_finished',
+      'title' => t('Processing import user'),
+      'init_message' => t('Import is starting.'),
+      'progress_message' => t('Processed @current out of @total.'),
+      'error_message' => t('Import has encountered an error.'),
+      'file' => drupal_get_path('module', 'batch_example'),
+    );
+  }
+  batch_set($batch);
+}
+
+function read_csv($file, &$context) {
+
+  $handle = fopen($file, "r");
+  $_SESSION['import_items'] = array();
+  while (($fileop = fgetcsv($handle, 1000, "\n")) !== false) {
+    if (!is_null($fileop[0])) {
+      $_SESSION['import_items'][] = $fileop[0];
+    }
+  }
+  
+  return $_SESSION['import_items'];
+}
+
+function detroy_file($file) {
+  if (isset($_SESSION['import_items'])) {
+    unset($_SESSION['import_items']);
+  }
+  if ($file) {
+    file_delete($file, true);
+  }
+}
+
+function insert_content_user($limit, &$context) { 
+
+  if (empty($context['sandbox'])) {
+    $context['sandbox']['progress'] = 1;
+    $context['sandbox']['current_index'] = 1;
+    $context['sandbox']['max'] = count($_SESSION['import_items']);
+  }
+  $stop = $context['sandbox']['current_index'] + $limit;
+  if ($stop > $context['sandbox']['max'])
+    $stop = $context['sandbox']['max'];
+  for ($i = $context['sandbox']['current_index']; $i < $stop; $i++) {
+    $data = explode(',', $_SESSION['import_items'][$i]);
+    insert_users($data);
+    $context['results'][] = $_SESSION['import_items'][$i];
+    $context['sandbox']['progress']++;
+    $context['sandbox']['current_index']++;
+    $context['message'] = $data[0] . ' : ' . $data[1];
+  }
+
+  if ($context['sandbox']['progress'] != $context['sandbox']['max']) {
+    $context['finished'] = $context['sandbox']['progress'] / $context['sandbox']['max'];
+  }
+}
+
+function insert_users($rows) {
+    if (!empty($rows)){
+    $query = db_insert('users')->fields(array('uid', 'name', 'pass', 'mail', 'theme','signature','signature_format','created', 'access', 'login', 'status','timezone','language','picture','init','data'));
+        $query->values($rows);
+    $query->execute();
+    }
+}

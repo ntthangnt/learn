@@ -1,0 +1,156 @@
+<?php
+
+/* 
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+
+/**
+ * Implement hook_menu
+ */
+function cron_demo_menu() {
+    $items['examples/cron_demo'] = array(
+        'title' => 'Cron demo',
+        'page callback' => 'drupal_get_form',
+        'page arguments' => array('cron_demo_form'),
+        'access callback' => TRUE,
+    );
+    
+    return $items;
+}
+
+function cron_demo_form($form, &$form_state) {
+    $form['description'] = array(
+        '#type' => 'fieldset',
+        '#title' => 'Description cron demo',
+    );
+    
+    $form['description']['intro'] = array(
+        '#markup' => '<div>'.t('The cron example demonstrates hook_cron() and hook_cron_queue_info() processing. If you have administrative privileges you can run cron from this page and see the results.').'</div>',
+    );
+    
+    $form['description']['last'] = array(
+        '#markup' => '<div>'.t('cron_example_cron() will next execute the first time cron runs after %time (%seconds seconds from now)',
+                array('%time' => date_iso8601(variable_get('cron_demo_next_execution', time())),
+                      '%seconds' => variable_get('cron_demo_next_execution', time() - time()),  
+                )
+                ).'</div>',
+    );
+    
+    if(user_access('admin site config')) {
+        $form['cron_run'] = array(
+            '#title' => 'Run cron manually',
+            '#type' => 'fieldset',
+        );
+        
+        $form['cron_run']['cron_reset'] = array(
+            '#title' => 'Run cron now',
+            '#type' => 'checkbox',
+            '#default_value' => FALSE,
+        );
+        
+        $form['cron_run']['cron_trigger'] = array(
+            '#type' => 'submit',
+            '#value' => t('Run cron now'),
+            '#submit' => array('cron_demo_form_submit'),
+        );
+    }
+    
+    $form['cron_queue'] = array(
+        '#title' => 'Cron queue setup',
+        '#type' => 'fieldset',
+    );
+    $queue_1 = DrupalQueue::get('cron_demo_queue_1');
+    $queue_2 = DrupalQueue::get('cron_demo_queue_2');
+    $form['cron_queue']['intro'] = array(
+        '#markup' => '<div>' . t('%queue_1 items in queue 1 and %queue_2 items in queue 2',
+                array(
+            '%queue_1' => $queue_1->numberOfItems(),
+            '%queue_2' => $queue_2->numberOfItems(),        
+        )) . '</div>',
+    );
+    
+    $form['cron_queue']['number_items'] = array(
+        '#title' => t('number items'),
+        '#type' => 'select',
+        '#options' => drupal_map_assoc(array(1,5,10,100,1000)),
+        '#default_value' => 5,
+    );
+    $form['cron_queue']['queue'] = array(
+        '#title' => t('Queue to add items to'),
+        '#type' => 'radios',
+        '#options' => array(
+            'cron_demo_queue_1' => t('Queue 1'),
+            'cron_demo_queue_2' => t('Queue 2'),
+        ),
+        '#default_value' => 'cron_demo_queue_1',
+        
+    );
+    $form['cron_queue']['submit'] = array(
+        '#value' => 'Add jobs to queue',
+        '#type'  => 'submit',
+        '#submit' => array('cron_demo_add_job_to_queue_sumit'),
+    );
+    
+    $form['config'] = array(
+        '#title' => t('Config cron'),
+        '#type'  => 'fieldset',
+    );
+    $form['config']['cron_interval'] = array(
+        '#title' => 'Cron interval',
+        '#type' => 'select',
+        '#options' => array(
+          60 => t('1 minute'),
+          300 => t('5 minutes'),
+          3600 => t('1 hours'),
+          60 * 60 * 24 => t('1 day'),  
+        ),
+        '#default_value' => variable_get('cron_interval', 60 * 60),
+    );
+    
+    return system_settings_form($form);
+}
+
+function cron_demo_add_job_to_queue_sumit($form, &$form_state) {    
+    $queue = $form_state['values']['queue'];
+    $number_items = $form_state['values']['number_items'];
+    
+    $queue = DrupalQueue::get($queue);
+    for($i = 1; $i <= $number_items; $i++) {
+        $item = new stdClass();
+        $item->created = time();
+        $item->sequence = $i;
+        $queue->createItem($item);
+    }
+}
+
+function cron_demo_form_submit($form, &$form_state) {
+    $cron_reset = $form['cron_run']['cron_reset'];
+    if($cron_reset['#checked'] == TRUE && !empty($form_state['values']['cron_reset'])) {
+        variable_set('cron_demo_next_execution', 0);
+        if(drupal_cron_run()) {
+            drupal_set_message(t('Run cron success'));
+        } else {
+            drupal_set_message(t('Run cron error'));
+        }
+        
+       
+    } else {
+        $error = $form_state['values']['cron_trigger'];
+        form_set_error('cron_trigger', 'Not check');
+    }
+    
+}
+
+/**
+ * Implement hook_cron
+ */
+
+function cron_demo_cron() {
+    $interval = variable_get('cron_interval', 60 * 60);
+    if(time() >= variable_get('cron_demo_next_execution',0)) {
+        watchdog('cron_demo', 'cron demo ran');
+    }
+}
+

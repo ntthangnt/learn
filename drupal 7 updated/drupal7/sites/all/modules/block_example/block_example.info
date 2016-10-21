@@ -1,0 +1,15 @@
+
+name = Block example
+description = Core Panels display functions; provides no external UI, at least one other Panels module should be enabled.
+core = 7.x
+package = "Block_example"
+version = Block_example_VERSION
+configure = admin/structure/example
+files[] = block_example.module
+
+; Information added by Drupal.org packaging script on 2015-01-28
+version = "7.x-3.5"
+core = "7.x"
+project = "block_example"
+datestamp = "1422472985"
+
